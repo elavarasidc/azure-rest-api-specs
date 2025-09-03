@@ -2,8 +2,18 @@
   "swagger": "2.0",
   "info": {
     "version": "2024-09-01-preview",
-    "title": "Azure Communication Service Call Automation APIs",
-    "description": "Azure Communication Service Call Automation APIs"
+    "title": "Azure Communication Services Call Automation API",
+    "description": "Azure Communication Services Call Automation provides developers with comprehensive telephony APIs to manage and orchestrate call flows. This service enables you to create, answer, redirect, reject, transfer calls, manage participants, play audio, recognize speech and DTMF inputs, start/stop call recording, and handle media streaming. The API supports both inbound and outbound calls with advanced features for building interactive voice response (IVR) systems, call centers, and communication applications.",
+    "contact": {
+      "name": "Microsoft Azure Communication Services",
+      "url": "https://docs.microsoft.com/azure/communication-services/",
+      "email": "acsdevx@microsoft.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "termsOfService": "https://azure.microsoft.com/support/legal/"
   },
   "schemes": [
     "https"
@@ -20,14 +30,14 @@
         "tags": [
           "PreConnections"
         ],
-        "summary": "Create an outbound call.",
-        "description": "Create an outbound call.",
+        "summary": "Create an outbound call connection",
+        "description": "Initiates an outbound call from your application to one or more target participants. This operation creates a new call connection and establishes the communication channel. The service will attempt to connect the call and send a CallConnected event to your callback URI upon successful connection. Use this operation to start calls for scenarios like automated notifications, customer service interactions, or conference calls.",
         "operationId": "CreateCall",
         "parameters": [
           {
             "name": "createCallRequest",
             "in": "body",
-            "description": "The create call request.",
+            "description": "The create call request payload containing target participants, callback URI, and optional call configuration settings such as media streaming options, cognitive services configuration, and custom context data.",
             "required": true,
             "schema": {
               "$ref": "#/definitions/CreateCallRequest"
@@ -52,16 +62,53 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Error",
+          "201": {
+            "description": "Call creation request was successfully accepted. The response contains the call connection properties including the unique call connection ID, call state, and target participants. You will receive a CallConnected event at your specified callback URI once the call is successfully established, or a CreateCallFailed event if the connection fails.",
+            "schema": {
+              "$ref": "#/definitions/CallConnectionProperties"
+            },
+            "headers": {
+              "Repeatability-Result": {
+                "description": "Indicates whether the request was successfully processed (accepted) or was ignored (duplicate) based on the provided Repeatability-Request-ID.",
+                "type": "string",
+                "enum": ["accepted", "rejected"]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - The request was malformed or contains invalid parameters. Common issues include invalid target identifiers, malformed callback URIs, or missing required fields.",
             "schema": {
               "$ref": "#/definitions/CommunicationErrorResponse"
             }
           },
-          "201": {
-            "description": "Returns details of the call properties once the CreateCall request is received by service. You will receive CallConnected event at your specified callback URI, once the call is connected.",
+          "401": {
+            "description": "Unauthorized - The request lacks valid authentication credentials. Ensure you're using a valid access token or connection string.",
             "schema": {
-              "$ref": "#/definitions/CallConnectionProperties"
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Forbidden - The request is valid but the server is refusing to process it. This may be due to insufficient permissions or resource quota limitations.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - The rate limit for this operation has been exceeded. Please wait before making additional requests.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred on the server side. Please try again later or contact support if the problem persists.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error occurred. See the response body for additional error details.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
             }
           }
         },
@@ -77,14 +124,14 @@
         "tags": [
           "PreConnections"
         ],
-        "summary": "Answer a Call.",
-        "description": "Answer a call using the IncomingCallContext from Event Grid.",
+        "summary": "Answer an incoming call",
+        "description": "Accepts and answers an incoming call using the IncomingCallContext received from Event Grid notifications. This operation establishes the call connection and allows your application to take control of the call flow. Use this for building applications that handle incoming calls such as customer support systems, interactive voice response (IVR) systems, or automated attendants.",
         "operationId": "AnswerCall",
         "parameters": [
           {
             "name": "answerCallRequest",
             "in": "body",
-            "description": "The answer call request.",
+            "description": "The answer call request payload containing the IncomingCallContext from the Event Grid notification, callback URI for receiving call events, and optional configuration for media streaming, cognitive services, and custom context data.",
             "required": true,
             "schema": {
               "$ref": "#/definitions/AnswerCallRequest"
@@ -109,16 +156,59 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Error",
+          "200": {
+            "description": "Call answer request was successfully accepted. The response contains the call connection properties including the unique call connection ID, caller information, and call state. You will receive a CallConnected event at your specified callback URI once the call is fully established.",
+            "schema": {
+              "$ref": "#/definitions/CallConnectionProperties"
+            },
+            "headers": {
+              "Repeatability-Result": {
+                "description": "Indicates whether the request was successfully processed (accepted) or was ignored (duplicate) based on the provided Repeatability-Request-ID.",
+                "type": "string",
+                "enum": ["accepted", "rejected"]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - The request was malformed or contains invalid parameters. Common issues include invalid IncomingCallContext, malformed callback URIs, or the call is no longer available to be answered.",
             "schema": {
               "$ref": "#/definitions/CommunicationErrorResponse"
             }
           },
-          "200": {
-            "description": "Returns details of the call properties once the AnswerCall request is received by service. You will receive CallConnected event at your specified callback URI, once the call is connected.",
+          "401": {
+            "description": "Unauthorized - The request lacks valid authentication credentials. Ensure you're using a valid access token or connection string.",
             "schema": {
-              "$ref": "#/definitions/CallConnectionProperties"
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Forbidden - The request is valid but the server is refusing to process it. This may be due to insufficient permissions or the call context has expired.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found - The incoming call context is invalid, expired, or the call is no longer available to be answered.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - The rate limit for this operation has been exceeded. Please wait before making additional requests.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred on the server side. Please try again later or contact support if the problem persists.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error occurred. See the response body for additional error details.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
             }
           }
         },
@@ -134,14 +224,14 @@
         "tags": [
           "PreConnections"
         ],
-        "summary": "Redirect a call.",
-        "description": "Redirect a call.",
+        "summary": "Redirect an incoming call",
+        "description": "Redirects an incoming call to another endpoint without answering it first. This operation transfers the incoming call to the specified target participant(s) and terminates the original call flow to your application. This is useful for implementing call forwarding, routing calls to appropriate agents, or transferring calls based on business rules.",
         "operationId": "RedirectCall",
         "parameters": [
           {
             "name": "redirectCallRequest",
             "in": "body",
-            "description": "The redirect call request.",
+            "description": "The redirect call request payload containing the IncomingCallContext from the Event Grid notification and the target participant(s) to redirect the call to.",
             "required": true,
             "schema": {
               "$ref": "#/definitions/RedirectCallRequest"
@@ -166,14 +256,57 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Error",
+          "204": {
+            "description": "The call has been successfully redirected to the specified target participant(s). No content is returned as the call is no longer associated with your application.",
+            "headers": {
+              "Repeatability-Result": {
+                "description": "Indicates whether the request was successfully processed (accepted) or was ignored (duplicate) based on the provided Repeatability-Request-ID.",
+                "type": "string",
+                "enum": ["accepted", "rejected"]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - The request was malformed or contains invalid parameters. Common issues include invalid IncomingCallContext, invalid target participants, or the call is no longer available to be redirected.",
             "schema": {
               "$ref": "#/definitions/CommunicationErrorResponse"
             }
           },
-          "204": {
-            "description": "The service has redirected the call to specified endpoint."
+          "401": {
+            "description": "Unauthorized - The request lacks valid authentication credentials. Ensure you're using a valid access token or connection string.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Forbidden - The request is valid but the server is refusing to process it. This may be due to insufficient permissions or the call context has expired.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found - The incoming call context is invalid, expired, or the call is no longer available to be redirected.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - The rate limit for this operation has been exceeded. Please wait before making additional requests.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred on the server side. Please try again later or contact support if the problem persists.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error occurred. See the response body for additional error details.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
           }
         },
         "x-ms-examples": {
