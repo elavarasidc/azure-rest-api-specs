@@ -1,0 +1,88 @@
+{
+  "parameters": {
+    "endpoint": "https://contoso.communication.azure.com",
+    "api-version": "2024-09-01-preview",
+    "Repeatability-Request-ID": "7b4e4e7b-0c93-4d89-9b8f-0e6c8c8b9a9b",
+    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:00:00 GMT",
+    "createCallRequest": {
+      "targets": [
+        {
+          "phoneNumber": "+14255551234"
+        }
+      ],
+      "sourceCallerIdNumber": {
+        "phoneNumber": "+18005551234"
+      },
+      "sourceDisplayName": "Contoso Customer Service",
+      "source": {
+        "communicationUserId": "8:acs:12345678-abcd-1234-5678-123456789012_00000001-2345-6789-abcd-123456789012"
+      },
+      "callbackUri": "https://contoso.ngrok.io/api/callback",
+      "operationContext": "call-appointment-reminder-12345",
+      "mediaStreamingConfiguration": {
+        "transportType": "websocket",
+        "transportUrl": "wss://contoso.websocket.endpoint/media",
+        "contentType": "audio/pcm",
+        "audioChannelType": "unmixed"
+      },
+      "transcriptionConfiguration": {
+        "transportType": "websocket",
+        "transportUrl": "wss://contoso.websocket.endpoint/transcription",
+        "locale": "en-US",
+        "startTranscription": true
+      },
+      "callIntelligenceOptions": {
+        "cognitiveServicesEndpoint": "https://contoso.cognitiveservices.azure.com/"
+      }
+    }
+  },
+  "responses": {
+    "201": {
+      "body": {
+        "callConnectionId": "402f3500-e2f4-4ded-9756-3bfe8b1185b9",
+        "serverCallId": "aHR0cHM6Ly94LWNvbnRvc28tY29tLmNvbXYyLnNreXBlLmNvbS9zaG9ydElkL2QxMzI4NzNi",
+        "targets": [
+          {
+            "phoneNumber": "+14255551234"
+          }
+        ],
+        "callConnectionState": "connecting",
+        "callbackUri": "https://contoso.ngrok.io/api/callback",
+        "sourceCallerIdNumber": {
+          "phoneNumber": "+18005551234"
+        },
+        "sourceDisplayName": "Contoso Customer Service",
+        "source": {
+          "communicationUserId": "8:acs:12345678-abcd-1234-5678-123456789012_00000001-2345-6789-abcd-123456789012"
+        },
+        "correlationId": "8b4e3f2a-1c5d-4e8a-9b7c-2d5e1f8a6b9c",
+        "mediaSubscriptionId": "media-sub-12345",
+        "dataSubscriptionId": "transcription-sub-67890",
+        "mediaStreamingSubscription": {
+          "state": "active"
+        },
+        "transcriptionSubscription": {
+          "state": "active"
+        }
+      },
+      "headers": {
+        "Repeatability-Result": "accepted"
+      }
+    },
+    "400": {
+      "body": {
+        "error": {
+          "code": "InvalidRequest",
+          "message": "Invalid target participant format. Phone numbers must include country code.",
+          "details": [
+            {
+              "code": "InvalidPhoneNumber",
+              "message": "The phone number '+1425555123' is invalid. Expected format: '+1NPANXXXXXX'",
+              "target": "targets[0].phoneNumber"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

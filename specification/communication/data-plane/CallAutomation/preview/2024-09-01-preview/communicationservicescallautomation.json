@@ -15,6 +15,32 @@
     },
     "termsOfService": "https://azure.microsoft.com/support/legal/"
   },
+  "tags": [
+    {
+      "name": "PreConnections",
+      "description": "Operations for managing call connections before they are established. These operations handle the initial phases of call setup including creating outbound calls, answering incoming calls, redirecting calls, and rejecting calls."
+    },
+    {
+      "name": "MidConnections", 
+      "description": "Operations for managing active call connections. These operations allow you to control ongoing calls including managing participants, playing audio, recognizing input, transferring calls, and terminating connections."
+    },
+    {
+      "name": "CallMedia",
+      "description": "Operations for managing media within active calls. These include playing audio files or text-to-speech, recognizing DTMF tones and speech input, controlling call recording, and managing media streaming."
+    },
+    {
+      "name": "CallRecording",
+      "description": "Operations for managing call recording functionality. These operations allow you to start, pause, resume, and stop call recording, as well as retrieve recording metadata and status."
+    },
+    {
+      "name": "CallTranscription", 
+      "description": "Operations for managing live transcription services during calls. These operations enable real-time speech-to-text conversion with support for multiple languages and custom vocabularies."
+    }
+  ],
+  "externalDocs": {
+    "description": "Azure Communication Services Call Automation comprehensive documentation, tutorials, and best practices",
+    "url": "https://docs.microsoft.com/azure/communication-services/concepts/call-automation/"
+  },
   "schemes": [
     "https"
   ],
@@ -321,14 +347,14 @@
         "tags": [
           "PreConnections"
         ],
-        "summary": "Reject the call.",
-        "description": "Reject the call.",
+        "summary": "Reject an incoming call",
+        "description": "Rejects an incoming call and terminates it immediately. This operation declines the incoming call using the IncomingCallContext received from Event Grid notifications. Use this for implementing call screening, business hours validation, or automated call filtering based on caller information or business rules.",
         "operationId": "RejectCall",
         "parameters": [
           {
             "name": "rejectCallRequest",
             "in": "body",
-            "description": "The reject call request.",
+            "description": "The reject call request payload containing the IncomingCallContext from the Event Grid notification and optional call reject reason for logging and analytics purposes.",
             "required": true,
             "schema": {
               "$ref": "#/definitions/RejectCallRequest"
@@ -353,14 +379,57 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": "Error",
+          "204": {
+            "description": "The incoming call has been successfully rejected. No content is returned as the call has been terminated and will not be connected to your application.",
+            "headers": {
+              "Repeatability-Result": {
+                "description": "Indicates whether the request was successfully processed (accepted) or was ignored (duplicate) based on the provided Repeatability-Request-ID.",
+                "type": "string",
+                "enum": ["accepted", "rejected"]
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - The request was malformed or contains invalid parameters. Common issues include invalid IncomingCallContext or the call is no longer available to be rejected.",
             "schema": {
               "$ref": "#/definitions/CommunicationErrorResponse"
             }
           },
-          "204": {
-            "description": "The service has rejected the call."
+          "401": {
+            "description": "Unauthorized - The request lacks valid authentication credentials. Ensure you're using a valid access token or connection string.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "403": {
+            "description": "Forbidden - The request is valid but the server is refusing to process it. This may be due to insufficient permissions or the call context has expired.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "404": {
+            "description": "Not Found - The incoming call context is invalid, expired, or the call is no longer available to be rejected.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - The rate limit for this operation has been exceeded. Please wait before making additional requests.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error - An unexpected error occurred on the server side. Please try again later or contact support if the problem persists.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error occurred. See the response body for additional error details.",
+            "schema": {
+              "$ref": "#/definitions/CommunicationErrorResponse"
+            }
           }
         },
         "x-ms-examples": {
@@ -375,8 +444,8 @@
         "tags": [
           "PreConnections"
         ],
-        "summary": "Create a Connection to a CallLocator.",
-        "description": "Create a connection to a CallLocator.",
+        "summary": "Connect to an existing call using CallLocator",
+        "description": "Establishes a connection to an ongoing call using a CallLocator identifier. This operation allows your application to join and take control of an existing call session. Use this for scenarios like agent transfer, call monitoring, call barge-in, or connecting supervisors to ongoing customer service calls.",
         "operationId": "Connect",
         "parameters": [
           {
@@ -2096,7 +2165,7 @@
   },
   "definitions": {
     "CreateCallRequest": {
-      "description": "The request payload for creating the call.",
+      "description": "The comprehensive request payload for creating an outbound call. This object contains all necessary information to establish a call connection including target participants, callback configuration, and optional advanced features like media streaming and AI services.",
       "required": [
         "targets",
         "callbackUri"
@@ -2104,51 +2173,57 @@
       "type": "object",
       "properties": {
         "targets": {
-          "description": "The targets of the call.",
+          "description": "An array of target participants to call. Each target represents a communication identity that will receive the call invitation. Supports PSTN phone numbers, Communication Services users, Microsoft Teams users, and other supported identity types.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/CommunicationIdentifierModel"
-          }
+          },
+          "minItems": 1,
+          "maxItems": 10
         },
         "sourceCallerIdNumber": {
           "$ref": "#/definitions/PhoneNumberIdentifierModel",
-          "description": "The source caller Id, a phone number, that's shown to the PSTN participant being invited.\r\nRequired only when calling a PSTN callee."
+          "description": "The phone number that will be displayed to PSTN participants as the caller ID. This field is required when calling PSTN numbers and must be a phone number owned by your Communication Services resource."
         },
         "sourceDisplayName": {
-          "description": "Display name of the call if dialing out to a pstn number",
-          "type": "string"
+          "description": "Display name shown to participants when calling PSTN numbers. This name will appear in the caller identification along with the sourceCallerIdNumber.",
+          "type": "string",
+          "maxLength": 256
         },
         "source": {
           "$ref": "#/definitions/CommunicationUserIdentifierModel",
-          "description": "The identifier of the source of the call"
+          "description": "The Communication Services user identity that is making the call. This represents the calling user in your application."
         },
         "opsSource": {
           "$ref": "#/definitions/MicrosoftTeamsAppIdentifierModel",
-          "description": "The identifier of the source in an OPS call"
+          "description": "The Microsoft Teams app identity for OPS (Office Phone System) calls. Used when the call originates from a Teams application."
         },
         "operationContext": {
-          "description": "A customer set value used to track the answering of a call.",
-          "type": "string"
+          "description": "A customer-defined string used to track and correlate this call operation with subsequent events and responses. This value will be included in callback events to help you identify which call operation triggered each event.",
+          "type": "string",
+          "maxLength": 256
         },
         "callbackUri": {
-          "description": "The callback URI.",
-          "type": "string"
+          "description": "The HTTPS URI where call events and notifications will be sent. This endpoint must be publicly accessible and capable of receiving POST requests with call event payloads.",
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://.*"
         },
         "mediaStreamingConfiguration": {
           "$ref": "#/definitions/MediaStreamingConfiguration",
-          "description": "Media Streaming Configuration."
+          "description": "Configuration for real-time media streaming. When configured, audio from the call will be streamed to the specified endpoint for analysis, recording, or other processing."
         },
         "transcriptionConfiguration": {
           "$ref": "#/definitions/TranscriptionConfiguration",
-          "description": "Live Transcription Configuration."
+          "description": "Configuration for live transcription services. When enabled, spoken audio will be converted to text in real-time and delivered through callback events."
         },
         "callIntelligenceOptions": {
           "$ref": "#/definitions/CallIntelligenceOptions",
-          "description": "AI options for the call."
+          "description": "AI-powered features for the call including speech recognition, sentiment analysis, and other cognitive services capabilities."
         },
         "customCallingContext": {
           "$ref": "#/definitions/CustomCallingContext",
-          "description": "Used by customer to send custom calling context to targets"
+          "description": "Custom context information that will be passed to target participants. This can include business-specific data, routing information, or other metadata relevant to the call."
         }
       }
     },
@@ -2366,66 +2441,75 @@
       }
     },
     "CallConnectionProperties": {
-      "description": "Properties of a call connection",
+      "description": "Comprehensive properties and state information for an active call connection. This object contains all the essential details about the call session including participants, connection state, identifiers, and subscription information for media streaming and transcription services.",
       "type": "object",
       "properties": {
         "callConnectionId": {
-          "description": "The call connection id.",
-          "type": "string"
+          "description": "Unique identifier for this call connection. This ID is used to reference the specific call connection in subsequent API operations such as hangup, transfer, play, or recognize operations.",
+          "type": "string",
+          "readOnly": true
         },
         "serverCallId": {
-          "description": "The server call id.",
-          "type": "string"
+          "description": "Server-generated unique identifier for the overall call session. Multiple call connections may share the same serverCallId when participants are added or transferred within the same call session.",
+          "type": "string",
+          "readOnly": true
         },
         "targets": {
-          "description": "The targets of the call.",
+          "description": "Array of target participants that were invited to join this call. This includes both participants who have joined and those who may still be connecting or have declined the call invitation.",
           "type": "array",
           "items": {
             "$ref": "#/definitions/CommunicationIdentifierModel"
-          }
+          },
+          "readOnly": true
         },
         "callConnectionState": {
-          "$ref": "#/definitions/CallConnectionStateModel"
+          "$ref": "#/definitions/CallConnectionStateModel",
+          "description": "Current state of the call connection indicating whether it is connecting, connected, transferring, or disconnected."
         },
         "callbackUri": {
-          "description": "The callback URI.",
-          "type": "string"
+          "description": "The HTTPS endpoint where call events and notifications for this connection are being sent. This is the URL that will receive all callback events related to this call connection.",
+          "type": "string",
+          "format": "uri",
+          "readOnly": true
         },
         "mediaSubscriptionId": {
-          "description": "SubscriptionId for media streaming",
-          "type": "string"
+          "description": "Unique subscription identifier for media streaming services. Present only when media streaming is configured for this call connection.",
+          "type": "string",
+          "readOnly": true
         },
         "dataSubscriptionId": {
-          "description": "SubscriptionId for transcription",
-          "type": "string"
+          "description": "Unique subscription identifier for transcription services. Present only when live transcription is enabled for this call connection.",
+          "type": "string",
+          "readOnly": true
         },
         "sourceCallerIdNumber": {
           "$ref": "#/definitions/PhoneNumberIdentifierModel",
-          "description": "The source caller Id, a phone number, that's shown to the PSTN participant being invited.\r\nRequired only when calling a PSTN callee."
+          "description": "The phone number displayed as the caller ID when calling PSTN participants. This is the number that appears on the recipient's phone display and must be a number owned by your Communication Services resource."
         },
         "sourceDisplayName": {
-          "description": "Display name of the call if dialing out to a pstn number.",
+          "description": "Display name shown to PSTN participants alongside the caller ID number. This friendly name helps recipients identify the calling entity or organization.",
           "type": "string"
         },
         "source": {
           "$ref": "#/definitions/CommunicationIdentifierModel",
-          "description": "Source identity."
+          "description": "Identity of the call initiator. This represents the user or application that started the call connection."
         },
         "correlationId": {
-          "description": "The correlation ID.",
-          "type": "string"
+          "description": "Correlation identifier used to track this call connection across different services and log entries. Useful for troubleshooting and linking related events.",
+          "type": "string",
+          "readOnly": true
         },
         "answeredBy": {
           "$ref": "#/definitions/CommunicationUserIdentifierModel",
-          "description": "Identity of the answering entity. Only populated when identity is provided in the request."
+          "description": "Identity of the user who answered the call when using 'answer on behalf of' functionality. Only populated when a specific answering identity was provided in the original request."
         },
         "mediaStreamingSubscription": {
           "$ref": "#/definitions/MediaStreamingSubscription",
-          "description": "The state of media streaming subscription for the call"
+          "description": "Current state and configuration of the media streaming subscription for this call connection. Contains streaming endpoint information and subscription status."
         },
         "transcriptionSubscription": {
           "$ref": "#/definitions/TranscriptionSubscription",
-          "description": "Transcription Subscription."
+          "description": "Current state and configuration of the live transcription subscription for this call connection. Contains transcription language settings and subscription status."
         },
         "answeredFor": {
           "$ref": "#/definitions/PhoneNumberIdentifierModel",
@@ -5485,9 +5569,10 @@
   "securityDefinitions": {
     "Authorization": {
       "type": "apiKey",
-      "description": "An Azure Communication Services user access token.",
+      "description": "Azure Communication Services authentication using either a user access token or a connection string. For user access tokens, provide the token in the 'Bearer <token>' format. For connection string authentication, provide the connection string directly. User access tokens provide identity-based authentication while connection strings provide resource-level authentication with administrative privileges.",
       "name": "Authorization",
-      "in": "header"
+      "in": "header",
+      "x-ms-docs-description": "Authentication is required for all Call Automation API operations. You can authenticate using either:\n\n1. **User Access Token**: For user-based authentication, obtain an access token through the Azure Communication Services Identity SDK and pass it as 'Bearer <token>' in the Authorization header.\n\n2. **Connection String**: For service-level authentication, use your Communication Services resource connection string directly in the Authorization header.\n\nRecommended approach: Use user access tokens for production applications to ensure proper access control and security."
     }
   },
   "security": [

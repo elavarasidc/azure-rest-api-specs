@@ -1,0 +1,83 @@
+{
+  "parameters": {
+    "endpoint": "https://contoso.communication.azure.com",
+    "api-version": "2024-09-01-preview",
+    "Repeatability-Request-ID": "9c5e5a8b-1d4f-4f9b-8c7e-2e6f1a8b9d0c",
+    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:01:00 GMT",
+    "answerCallRequest": {
+      "incomingCallContext": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJjYyI6Ijk1ZTk5YmY4LTAzNGMtNGRhMC1iZDY4LWRjZjk1MTNhMGE5NyIsInNmIjoiMTIzNCIsImV4cCI6IjE2NDU2MjE5MjUiLCJpYXQiOiIxNjQ1NjIwMDI1In0.",
+      "callbackUri": "https://contoso.ngrok.io/api/callback",
+      "operationContext": "incoming-call-support-12345",
+      "answeredBy": {
+        "communicationUserId": "8:acs:12345678-abcd-1234-5678-123456789012_00000001-2345-6789-abcd-123456789012"
+      },
+      "mediaStreamingConfiguration": {
+        "transportType": "websocket",
+        "transportUrl": "wss://contoso.websocket.endpoint/media",
+        "contentType": "audio/pcm",
+        "audioChannelType": "unmixed"
+      },
+      "transcriptionConfiguration": {
+        "transportType": "websocket",
+        "transportUrl": "wss://contoso.websocket.endpoint/transcription",
+        "locale": "en-US",
+        "startTranscription": true
+      },
+      "callIntelligenceOptions": {
+        "cognitiveServicesEndpoint": "https://contoso.cognitiveservices.azure.com/"
+      }
+    }
+  },
+  "responses": {
+    "200": {
+      "body": {
+        "callConnectionId": "502f3600-f3g5-5efe-a867-4cfg9c2196ca",
+        "serverCallId": "aHR0cHM6Ly94LWNvbnRvc28tY29tLmNvbXYyLnNreXBlLmNvbS9zaG9ydElkL2UyNDM5ODRj",
+        "targets": [
+          {
+            "communicationUserId": "8:acs:87654321-dcba-4321-8765-876543218765_00000002-3456-7890-bcde-234567890123"
+          }
+        ],
+        "callConnectionState": "connected",
+        "callbackUri": "https://contoso.ngrok.io/api/callback",
+        "sourceCallerIdNumber": {
+          "phoneNumber": "+12065551234"
+        },
+        "sourceDisplayName": "John Doe",
+        "source": {
+          "communicationUserId": "8:acs:87654321-dcba-4321-8765-876543218765_00000002-3456-7890-bcde-234567890123"
+        },
+        "correlationId": "9c5e4a3b-2d6f-5f9c-ad8e-3f7g2b9d0e1f",
+        "answeredBy": {
+          "communicationUserId": "8:acs:12345678-abcd-1234-5678-123456789012_00000001-2345-6789-abcd-123456789012"
+        },
+        "mediaSubscriptionId": "media-sub-23456",
+        "dataSubscriptionId": "transcription-sub-78901",
+        "mediaStreamingSubscription": {
+          "state": "active"
+        },
+        "transcriptionSubscription": {
+          "state": "active"
+        }
+      },
+      "headers": {
+        "Repeatability-Result": "accepted"
+      }
+    },
+    "404": {
+      "body": {
+        "error": {
+          "code": "IncomingCallNotFound",
+          "message": "The incoming call context is invalid or expired. The call may have been answered, rejected, or timed out.",
+          "details": [
+            {
+              "code": "ExpiredCallContext",
+              "message": "The incoming call context has expired. Incoming call contexts are valid for 60 seconds.",
+              "target": "incomingCallContext"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

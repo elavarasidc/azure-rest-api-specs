@@ -1,0 +1,49 @@
+{
+  "parameters": {
+    "endpoint": "https://contoso.communication.azure.com",
+    "api-version": "2024-09-01-preview",
+    "Repeatability-Request-ID": "be7g7c0d-3f6h-6hbd-ce0g-5gbh4d3308ec",
+    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:03:00 GMT",
+    "rejectCallRequest": {
+      "incomingCallContext": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJjYyI6Ijk1ZTk5YmY4LTAzNGMtNGRhMC1iZDY4LWRjZjk1MTNhMGE5NyIsInNmIjoiMTIzNCIsImV4cCI6IjE2NDU2MjE5MjUiLCJpYXQiOiIxNjQ1NjIwMDI1In0.",
+      "callRejectReason": "busy"
+    }
+  },
+  "responses": {
+    "204": {
+      "headers": {
+        "Repeatability-Result": "accepted"
+      }
+    },
+    "400": {
+      "body": {
+        "error": {
+          "code": "InvalidRequest",
+          "message": "The request is malformed or contains invalid parameters.",
+          "details": [
+            {
+              "code": "InvalidCallRejectReason",
+              "message": "The call reject reason 'unknown-reason' is not supported. Valid values are: 'busy', 'none'.",
+              "target": "callRejectReason"
+            }
+          ]
+        }
+      }
+    },
+    "404": {
+      "body": {
+        "error": {
+          "code": "IncomingCallNotFound",
+          "message": "The incoming call context is invalid or expired. The call may have already been answered, rejected, or timed out.",
+          "details": [
+            {
+              "code": "ExpiredCallContext",
+              "message": "The incoming call context has expired. Incoming call contexts are valid for 60 seconds.",
+              "target": "incomingCallContext"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

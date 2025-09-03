@@ -1,0 +1,53 @@
+{
+  "parameters": {
+    "endpoint": "https://contoso.communication.azure.com",
+    "api-version": "2024-09-01-preview", 
+    "Repeatability-Request-ID": "ad6f6b9c-2e5g-5gac-bd9f-4fag3c2297db",
+    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:02:00 GMT",
+    "redirectCallRequest": {
+      "incomingCallContext": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJjYyI6Ijk1ZTk5YmY4LTAzNGMtNGRhMC1iZDY4LWRjZjk1MTNhMGE5NyIsInNmIjoiMTIzNCIsImV4cCI6IjE2NDU2MjE5MjUiLCJpYXQiOiIxNjQ1NjIwMDI1In0.",
+      "targets": [
+        {
+          "phoneNumber": "+14255556789"
+        }
+      ]
+    }
+  },
+  "responses": {
+    "204": {
+      "headers": {
+        "Repeatability-Result": "accepted"
+      }
+    },
+    "400": {
+      "body": {
+        "error": {
+          "code": "InvalidRedirectTarget",
+          "message": "The redirect target is invalid or unreachable.",
+          "details": [
+            {
+              "code": "InvalidPhoneNumber",
+              "message": "The phone number '+1425555678' is invalid. Expected format: '+1NPANXXXXXX'",
+              "target": "targets[0].phoneNumber"
+            }
+          ]
+        }
+      }
+    },
+    "404": {
+      "body": {
+        "error": {
+          "code": "IncomingCallNotFound",
+          "message": "The incoming call context is invalid or expired. The call may have already been answered, rejected, or redirected.",
+          "details": [
+            {
+              "code": "ExpiredCallContext",
+              "message": "The incoming call context has expired. Incoming call contexts are valid for 60 seconds.",
+              "target": "incomingCallContext"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
