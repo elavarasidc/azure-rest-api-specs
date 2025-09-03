@@ -1,73 +1,26 @@
 {
   "parameters": {
-    "endpoint": "https://contoso.communication.azure.com",
-    "api-version": "2024-09-01-preview",
-    "Repeatability-Request-ID": "cf8h8d1e-4g7i-7ice-df1h-6hci5e4419fd",
-    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:04:00 GMT",
+    "endpoint": "https://contoso.communications.azure.com",
+    "api-version": "2024-06-15-preview",
     "connectRequest": {
+      "callbackUri": "https://contoso.communications.azure.com/callback",
       "callLocator": {
-        "id": "aHR0cHM6Ly94LWNvbnRvc28tY29tLmNvbXYyLnNreXBlLmNvbS9zaG9ydElkL2QxMzI4NzNi",
-        "kind": "serverCallLocator"
+        "roomId": "99434917639286209",
+        "kind": "roomCallLocator"
       },
-      "callbackUri": "https://contoso.ngrok.io/api/callback",
-      "operationContext": "supervisor-connect-monitoring-56789",
-      "source": {
-        "communicationUserId": "8:acs:11223344-aabb-1122-3344-112233445566_00000003-4567-8901-cdef-345678901234"
+      "callIntelligenceOptions": {
+        "cognitiveServicesEndpoint": "https://cognitiveservice.com"
       }
     }
   },
   "responses": {
     "200": {
       "body": {
-        "callConnectionId": "602f3700-g4h6-6fgf-b978-5dgh0d3297db",
-        "serverCallId": "aHR0cHM6Ly94LWNvbnRvc28tY29tLmNvbXYyLnNreXBlLmNvbS9zaG9ydElkL2QxMzI4NzNi",
-        "targets": [
-          {
-            "communicationUserId": "8:acs:87654321-dcba-4321-8765-876543218765_00000002-3456-7890-bcde-234567890123"
-          },
-          {
-            "phoneNumber": "+14255551234"
-          }
-        ],
-        "callConnectionState": "connected",
-        "callbackUri": "https://contoso.ngrok.io/api/callback",
-        "source": {
-          "communicationUserId": "8:acs:11223344-aabb-1122-3344-112233445566_00000003-4567-8901-cdef-345678901234"
-        },
-        "correlationId": "cf8h7d2f-5h8j-8jdf-eg2i-7idj6f5520ge"
-      },
-      "headers": {
-        "Repeatability-Result": "accepted"
-      }
-    },
-    "400": {
-      "body": {
-        "error": {
-          "code": "InvalidCallLocator",
-          "message": "The call locator is invalid or malformed.",
-          "details": [
-            {
-              "code": "InvalidServerCallId",
-              "message": "The server call ID 'invalid-call-id' is not a valid base64 encoded identifier.",
-              "target": "callLocator.id"
-            }
-          ]
-        }
-      }
-    },
-    "404": {
-      "body": {
-        "error": {
-          "code": "CallNotFound",
-          "message": "The call specified by the call locator was not found or is no longer active.",
-          "details": [
-            {
-              "code": "CallTerminated",
-              "message": "The call has already terminated and cannot be joined.",
-              "target": "callLocator"
-            }
-          ]
-        }
+        "callConnectionId": "18dea47f-b081-4107-9a5c-4300819d2c6c",
+        "serverCallId": "aHR0cHM6Ly9jb252ZXJzYXRpb251cmwvdGVzdA",
+        "targets": [],
+        "callConnectionState": "connecting",
+        "callbackUri": "https://contoso.communications.azure.com/callback"
       }
     }
   }

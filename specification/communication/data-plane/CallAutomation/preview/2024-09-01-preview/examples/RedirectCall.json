@@ -1,53 +1,18 @@
 {
   "parameters": {
-    "endpoint": "https://contoso.communication.azure.com",
-    "api-version": "2024-09-01-preview", 
-    "Repeatability-Request-ID": "ad6f6b9c-2e5g-5gac-bd9f-4fag3c2297db",
-    "Repeatability-First-Sent": "Mon, 15 Jan 2024 10:02:00 GMT",
+    "endpoint": "https://contoso.communications.azure.com",
+    "api-version": "2024-06-15-preview",
     "redirectCallRequest": {
-      "incomingCallContext": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJjYyI6Ijk1ZTk5YmY4LTAzNGMtNGRhMC1iZDY4LWRjZjk1MTNhMGE5NyIsInNmIjoiMTIzNCIsImV4cCI6IjE2NDU2MjE5MjUiLCJpYXQiOiIxNjQ1NjIwMDI1In0.",
-      "targets": [
-        {
-          "phoneNumber": "+14255556789"
+      "target": {
+        "kind": "communicationUser",
+        "communicationUser": {
+          "id": "8:acs:b9614373-fd0b-480c-8fd2-cb58b70eab9f_0f50d091-5bd3-448b-884d-44be7037d9b9"
         }
-      ]
+      },
+      "incomingCallContext": "H4sIAAAAAAAEAMVVS2/bOBD+LzrspaElPiSSBoJFNnvYoNi0aHaBtpcFRQ5t1rIokLRTJ8h/X1J2soHRQ4A9lAdZ4ry+mflm/FhpNQy3PjnrtErOj9XysbLBb8uvM9WyEkul49J2ioEiGhlKADHVKiR7oVDXUGo5tkpa8k8zH9yglhuKuLQNkqLpEMZUNSZLNFfVRWVcnAZ1uFVbyP53EQLOtzCaybsx3ZSgnZFKKk4QgLGIybZFfU8oolIZzFrWGk6yzaDG1U6tYLaBMd9MKiSn3aROjjSRoAUHhG1PEDMdIGFlg4yRUmhChWQsm62dMdl+adUQ4aIKEP0u6KPft6RePV1Uyf/PmmmT5VijnlmMpD7VDLg4r9m4G4azgjWng37weD5nBTt6OS8YlcRyBhpJwD1iggFSbccQJVRJANW1gp4XLCc/uHETS/4qJaXX2dE6pSku61pNbgETMrBfxM1hgsUIqVzWe1Lrqda6iBBpmsXx9ZWW1vUe19aHDZja9pqBMRyBpQyxriVIgNBIGa11D9wy2tWE1Q7np6iPOH51lyXtLRinrsZ4D6FwQmdY28LEKfhV7nX8+XCfkZwAB/gGOv18WEccJ1A7M/0V1BgnHwq0/JmBYSoWEi84XTC+pIyLuszCXPBrPyYY0zPTsv57OBSOxJxoXjXzV3WzJs1D/+X22gy/36m762/vhk8PV5eXOWAm5gZKqDZ5/PCdc2L/vvmjbynGh3fhPus8lVIZFzLI7PBj8BNkOsPMRBc/nURXw+DvIbM7hR3MJnmWdNE6Itt7p2Gr3HAHKblxVcyfsp724x5CnPfizbh36WVDvpaUNIMfhplbb+1Xtp87hhfPr687lq/qB4HD9ec1vN98+OzhQ9Rfp26zKq34BS47ygVtBZdNS3AjMCnb0MU/d0NyH/NEH15WmYu/BZ+7q2L6b1oN9LvVS3se5z+B4w6lWIOSHOl5+rmiSJoOI9b0jZZATMPUD7bsm5ZGjrsKfjfNcb+faPH0LyoNW7KCBgAA"
     }
   },
   "responses": {
-    "204": {
-      "headers": {
-        "Repeatability-Result": "accepted"
-      }
-    },
-    "400": {
-      "body": {
-        "error": {
-          "code": "InvalidRedirectTarget",
-          "message": "The redirect target is invalid or unreachable.",
-          "details": [
-            {
-              "code": "InvalidPhoneNumber",
-              "message": "The phone number '+1425555678' is invalid. Expected format: '+1NPANXXXXXX'",
-              "target": "targets[0].phoneNumber"
-            }
-          ]
-        }
-      }
-    },
-    "404": {
-      "body": {
-        "error": {
-          "code": "IncomingCallNotFound",
-          "message": "The incoming call context is invalid or expired. The call may have already been answered, rejected, or redirected.",
-          "details": [
-            {
-              "code": "ExpiredCallContext",
-              "message": "The incoming call context has expired. Incoming call contexts are valid for 60 seconds.",
-              "target": "incomingCallContext"
-            }
-          ]
-        }
-      }
-    }
+    "204": {}
   }
 }
